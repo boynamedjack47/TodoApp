@@ -1,4 +1,15 @@
-.list1 {
-display: flex;
 
+.todolists{
+    display: flex;
+}
+.list1  {
+display: flex;
+}
+.list2 {
+    display: flex;
+}
+
+.name {
+    display: flex;
+    justify-content: center;
 }
