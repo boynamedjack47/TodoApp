@@ -39,6 +39,14 @@ function createNewList(listTitle = '', tasks = []) {
     const listGroup = document.createElement('ul');
     listGroup.classList.add('list-group');
 
+    // Function to check if all tasks are completed
+    function checkAllTasksCompleted() {
+        const allChecked = [...listGroup.querySelectorAll('.form-check-input')].every(checkbox => checkbox.checked);
+        if (allChecked) {
+            archiveList(newListDiv);  // Move the list to archive when all tasks are checked
+        }
+    }
+
     // Function to add a task to the list
     function addTask(taskText) {
         if (!taskText.trim()) return;
@@ -56,6 +64,9 @@ function createNewList(listTitle = '', tasks = []) {
         const label = document.createElement('label');
         label.classList.add('form-check-label');
         label.textContent = taskText;
+
+        // Add an event listener to the checkbox to check for task completion
+        checkbox.addEventListener('change', checkAllTasksCompleted);
 
         taskContent.appendChild(checkbox);
         taskContent.appendChild(label);
@@ -146,6 +157,17 @@ function createNewList(listTitle = '', tasks = []) {
 
     // Save the lists to localStorage
     saveLists();
+}
+
+// Function to move the list to the archive div
+function archiveList(listDiv) {
+    // Remove the list from the main todo container
+    listDiv.remove();
+
+    // Append it to the archive container
+    document.querySelector('.archived').appendChild(listDiv);
+
+    saveLists();  // Update the saved state in localStorage
 }
 
 // Event listener for the 'Create new list' button
