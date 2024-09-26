@@ -63,6 +63,14 @@ function createNewList() {
         taskInput.value = ''; // Clear input after adding the task
     });
 
+    const deleteBtn = document.createElement('button');
+    deleteBtn.classList.add('btn', 'btn-danger', 'mt-2', 'ms-2');
+    deleteBtn.textContent = 'Delete List';
+
+    deleteBtn.addEventListener('click', function () {
+        newListDiv.remove();  // Remove the entire list from the DOM
+    });
+
     // Append elements to the task input div
     taskInputDiv.appendChild(taskInput);
     taskInputDiv.appendChild(addTaskBtn);
@@ -71,6 +79,7 @@ function createNewList() {
     newListDiv.appendChild(listName);
     newListDiv.appendChild(taskInputDiv);
     newListDiv.appendChild(listGroup);
+    newListDiv.appendChild(deleteBtn);  // Add the delete button at the end
 
     // Append the new list div to the todolists container
     document.querySelector('.todolists').appendChild(newListDiv);
