@@ -1,6 +1,7 @@
 
 .todolists{
     display: flex;
+    gap: 25px
 }
 .list1  {
 display: flex;
