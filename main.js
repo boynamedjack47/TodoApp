@@ -1,10 +1,30 @@
-// Function to create a new list
-function createNewList() {
-    // Prompt the user to enter the list name and first task
-    const listTitle = prompt('Enter a name for your new list:');
-    const firstTask = prompt('Enter the first task for your new list:');
+// Function to load lists from localStorage
+function loadLists() {
+    const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
+    storedLists.forEach(list => createNewList(list.title, list.tasks));
+}
 
-    if (!listTitle || !firstTask) return; // Exit if any input is empty or canceled
+// Function to save lists to localStorage
+function saveLists() {
+    const lists = [];
+    document.querySelectorAll('.list').forEach(listDiv => {
+        const title = listDiv.querySelector('.name').textContent;
+        const tasks = [];
+        listDiv.querySelectorAll('.list-group-item label').forEach(label => {
+            tasks.push(label.textContent);
+        });
+        lists.push({ title, tasks });
+    });
+    localStorage.setItem('todolists', JSON.stringify(lists));
+}
+
+// Function to create a new list
+function createNewList(listTitle = '', tasks = []) {
+    // If no title is provided, ask the user for the title and first task
+    if (!listTitle) {
+        listTitle = prompt('Enter a name for your new list:');
+        if (!listTitle) return; // Exit if title is empty
+    }
 
     // Create a new div element for the list
     const newListDiv = document.createElement('div');
@@ -19,7 +39,7 @@ function createNewList() {
     const listGroup = document.createElement('ul');
     listGroup.classList.add('list-group');
 
-    // Function to add a task to the list with a settings button
+    // Function to add a task to the list
     function addTask(taskText) {
         if (!taskText.trim()) return;
 
@@ -28,11 +48,11 @@ function createNewList() {
         listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
 
         const taskContent = document.createElement('div');
-        
+
         const checkbox = document.createElement('input');
         checkbox.classList.add('form-check-input', 'me-1');
         checkbox.type = 'checkbox';
-        
+
         const label = document.createElement('label');
         label.classList.add('form-check-label');
         label.textContent = taskText;
@@ -43,8 +63,8 @@ function createNewList() {
         // Settings button to toggle task delete option
         const settingsBtn = document.createElement('button');
         settingsBtn.classList.add('btn', 'btn-secondary', 'btn-sm', 'ms-2');
-        settingsBtn.textContent = '⚙'; // A gear icon for settings
-        
+        settingsBtn.textContent = '⚙';
+
         // Delete button, initially hidden
         const deleteTaskBtn = document.createElement('button');
         deleteTaskBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'ms-2');
@@ -59,6 +79,7 @@ function createNewList() {
         // Add functionality to delete the task when delete button is clicked
         deleteTaskBtn.addEventListener('click', function () {
             listItem.remove();  // Remove the specific task from the list
+            saveLists();        // Update the saved lists
         });
 
         // Append task content and buttons to list item
@@ -70,8 +91,13 @@ function createNewList() {
         listGroup.appendChild(listItem);
     }
 
-    // Add the first task provided by the user
-    addTask(firstTask);
+    // Add the provided tasks (or prompt the user for the first task)
+    if (tasks.length === 0) {
+        const firstTask = prompt('Enter the first task for your new list:');
+        if (firstTask) addTask(firstTask);
+    } else {
+        tasks.forEach(task => addTask(task));
+    }
 
     // Input field and button to add more tasks dynamically
     const taskInputDiv = document.createElement('div');
@@ -91,6 +117,7 @@ function createNewList() {
         const taskText = taskInput.value.trim();
         addTask(taskText);
         taskInput.value = ''; // Clear input after adding the task
+        saveLists();          // Save the lists to localStorage
     });
 
     // Create a delete button for the entire list
@@ -101,6 +128,7 @@ function createNewList() {
     // Add functionality to delete the entire list when the button is clicked
     deleteBtn.addEventListener('click', function () {
         newListDiv.remove();  // Remove the entire list from the DOM
+        saveLists();          // Update the saved lists
     });
 
     // Append elements to the task input div
@@ -115,6 +143,9 @@ function createNewList() {
 
     // Append the new list div to the todolists container
     document.querySelector('.todolists').appendChild(newListDiv);
+
+    // Save the lists to localStorage
+    saveLists();
 }
 
 // Event listener for the 'Create new list' button
@@ -122,3 +153,6 @@ document.getElementById('createNewList').addEventListener('click', function (e) 
     e.preventDefault();  // Prevent default action
     createNewList();     // Call the function to create a new list
 });
+
+// Load the saved lists from localStorage when the page loads
+document.addEventListener('DOMContentLoaded', loadLists);
