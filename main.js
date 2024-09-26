@@ -1,7 +1,7 @@
 // Function to load lists from localStorage
 function loadLists() {
     const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
-    storedLists.forEach(list => createNewList(list.title, list.tasks));
+    storedLists.forEach(list => createNewList(list.title, list.tasks, list.isArchived));
 }
 
 // Function to save lists to localStorage
@@ -10,16 +10,19 @@ function saveLists() {
     document.querySelectorAll('.list').forEach(listDiv => {
         const title = listDiv.querySelector('.name').textContent;
         const tasks = [];
-        listDiv.querySelectorAll('.list-group-item label').forEach(label => {
-            tasks.push(label.textContent);
+        const isArchived = listDiv.closest('.archived') ? true : false; // Check if the list is in the archived section
+        listDiv.querySelectorAll('.list-group-item').forEach(item => {
+            const label = item.querySelector('label').textContent;
+            const isChecked = item.querySelector('input[type="checkbox"]').checked;
+            tasks.push({ label, isChecked }); // Save task and its completion status
         });
-        lists.push({ title, tasks });
+        lists.push({ title, tasks, isArchived });
     });
     localStorage.setItem('todolists', JSON.stringify(lists));
 }
 
 // Function to create a new list
-function createNewList(listTitle = '', tasks = []) {
+function createNewList(listTitle = '', tasks = [], isArchived = false) {
     // If no title is provided, ask the user for the title and first task
     if (!listTitle) {
         listTitle = prompt('Enter a name for your new list:');
@@ -44,11 +47,14 @@ function createNewList(listTitle = '', tasks = []) {
         const allChecked = [...listGroup.querySelectorAll('.form-check-input')].every(checkbox => checkbox.checked);
         if (allChecked) {
             archiveList(newListDiv);  // Move the list to archive when all tasks are checked
+        } else {
+            unarchiveList(newListDiv); // Move back to active if at least one task is unchecked
         }
     }
 
     // Function to add a task to the list
-    function addTask(taskText) {
+    function addTask(task) {
+        const { label: taskText, isChecked = false } = task;
         if (!taskText.trim()) return;
 
         // Create a new list item
@@ -60,6 +66,7 @@ function createNewList(listTitle = '', tasks = []) {
         const checkbox = document.createElement('input');
         checkbox.classList.add('form-check-input', 'me-1');
         checkbox.type = 'checkbox';
+        checkbox.checked = isChecked;
 
         const label = document.createElement('label');
         label.classList.add('form-check-label');
@@ -105,7 +112,7 @@ function createNewList(listTitle = '', tasks = []) {
     // Add the provided tasks (or prompt the user for the first task)
     if (tasks.length === 0) {
         const firstTask = prompt('Enter the first task for your new list:');
-        if (firstTask) addTask(firstTask);
+        if (firstTask) addTask({ label: firstTask });
     } else {
         tasks.forEach(task => addTask(task));
     }
@@ -126,7 +133,7 @@ function createNewList(listTitle = '', tasks = []) {
     // Add task functionality when button is clicked
     addTaskBtn.addEventListener('click', function () {
         const taskText = taskInput.value.trim();
-        addTask(taskText);
+        addTask({ label: taskText });
         taskInput.value = ''; // Clear input after adding the task
         saveLists();          // Save the lists to localStorage
     });
@@ -152,8 +159,12 @@ function createNewList(listTitle = '', tasks = []) {
     newListDiv.appendChild(listGroup);
     newListDiv.appendChild(deleteBtn);  // Add the delete button for the list
 
-    // Append the new list div to the todolists container
-    document.querySelector('.todolists').appendChild(newListDiv);
+    // Append the new list div to the appropriate section (active or archive)
+    if (isArchived) {
+        document.querySelector('.archived').appendChild(newListDiv);
+    } else {
+        document.querySelector('.todolists').appendChild(newListDiv);
+    }
 
     // Save the lists to localStorage
     saveLists();
@@ -161,12 +172,13 @@ function createNewList(listTitle = '', tasks = []) {
 
 // Function to move the list to the archive div
 function archiveList(listDiv) {
-    // Remove the list from the main todo container
-    listDiv.remove();
-
-    // Append it to the archive container
     document.querySelector('.archived').appendChild(listDiv);
+    saveLists();  // Update the saved state in localStorage
+}
 
+// Function to move the list back to the active section
+function unarchiveList(listDiv) {
+    document.querySelector('.todolists').appendChild(listDiv);
     saveLists();  // Update the saved state in localStorage
 }
 
