@@ -78,10 +78,16 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
         taskContent.appendChild(checkbox);
         taskContent.appendChild(label);
 
-        // Settings button to toggle task delete option
+        // Settings button to toggle task delete/edit options
         const settingsBtn = document.createElement('button');
         settingsBtn.classList.add('btn', 'btn-secondary', 'btn-sm', 'ms-2');
         settingsBtn.textContent = '⚙';
+
+        // Edit button, initially hidden
+        const editTaskBtn = document.createElement('button');
+        editTaskBtn.classList.add('btn', 'btn-warning', 'btn-sm', 'ms-2');
+        editTaskBtn.textContent = 'Edit';
+        editTaskBtn.style.display = 'none'; // Hide by default
 
         // Delete button, initially hidden
         const deleteTaskBtn = document.createElement('button');
@@ -89,9 +95,31 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
         deleteTaskBtn.textContent = 'Delete';
         deleteTaskBtn.style.display = 'none'; // Hide by default
 
-        // Show/hide the delete button when settings is clicked
-        settingsBtn.addEventListener('click', function () {
-            deleteTaskBtn.style.display = deleteTaskBtn.style.display === 'none' ? 'inline-block' : 'none';
+         // Show/hide the edit and delete buttons when settings is clicked
+         settingsBtn.addEventListener('click', function () {
+            const isVisible = editTaskBtn.style.display === 'inline-block';
+            editTaskBtn.style.display = deleteTaskBtn.style.display = isVisible ? 'none' : 'inline-block';
+        });
+
+         // Add functionality to edit the task when edit button is clicked
+         editTaskBtn.addEventListener('click', function () {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = label.textContent;
+            input.classList.add('form-control', 'me-2');
+
+            // Replace the label with the input field
+            taskContent.replaceChild(input, label);
+
+            // When input loses focus, save changes
+            input.addEventListener('blur', function () {
+                label.textContent = input.value;  // Update the label with new value
+                taskContent.replaceChild(label, input);
+                saveLists();  // Save changes to localStorage
+            });
+
+            // Focus the input field for immediate editing
+            input.focus();
         });
 
         // Add functionality to delete the task when delete button is clicked
@@ -103,6 +131,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
         // Append task content and buttons to list item
         listItem.appendChild(taskContent);
         listItem.appendChild(settingsBtn);
+        listItem.appendChild(editTaskBtn);
         listItem.appendChild(deleteTaskBtn);
 
         // Add the task to the list group
