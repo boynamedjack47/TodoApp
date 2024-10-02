@@ -1,8 +1,9 @@
-// Function to load lists from localStorage
-function loadLists() {
-    const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
+//Function to load lists from localStorage
+ function loadLists() {
+     const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
     storedLists.forEach(list => createNewList(list.title, list.tasks, list.isArchived));
-}
+ }
+ 
 
 // Function to save lists to localStorage
 function saveLists() {
@@ -37,6 +38,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     const listName = document.createElement('div');
     listName.classList.add('name', 'fw-bold');
     listName.textContent = listTitle;
+
 
     // Create the ul element for tasks
     const listGroup = document.createElement('ul');
@@ -169,7 +171,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
 
     // Create a delete button for the entire list
     const deleteBtn = document.createElement('button');
-    deleteBtn.classList.add('btn', 'btn-danger', 'mt-2', 'ms-2');
+    deleteBtn.classList.add('btn', 'btn-danger', 'mt-2', );
     deleteBtn.textContent = 'Delete List';
 
     // Add functionality to delete the entire list when the button is clicked
