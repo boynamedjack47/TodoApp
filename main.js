@@ -57,7 +57,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     // Function to add a task to the list
     function addTask(task) {
         const { label: taskText, isChecked = false } = task;
-        if (!taskText.trim()) return;
+        if (!taskText.trim()) return; 
 
         // Create a new list item
         const listItem = document.createElement('li');
@@ -138,6 +138,8 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
 
         // Add the task to the list group
         listGroup.appendChild(listItem);
+
+    
     }
 
     // Add the provided tasks (or prompt the user for the first task)
