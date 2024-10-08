@@ -60,3 +60,16 @@ h3 {
 .maincontent {
     background-color: azure;
 }
+
+.todolists {
+    justify-content: center;
+}
+
+.archived {
+    justify-content: center;
+}
+
+h3 {
+    display: flex;
+    justify-content: center;
+}
