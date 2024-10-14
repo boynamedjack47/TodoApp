@@ -73,3 +73,7 @@ h3 {
     display: flex;
     justify-content: center;
 }
+
+.navbar {
+    background-color: ivory;
+}
