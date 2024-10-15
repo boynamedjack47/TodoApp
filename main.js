@@ -1,4 +1,4 @@
-// Function to load lists from localStorage
+// Function to load lists from localStorage with error handling
 function loadLists() {
     try {
         const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
@@ -42,6 +42,43 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     listName.classList.add('name', 'fw-bold');
     listName.textContent = listTitle;
 
+    // Function to enable editing the list name
+    function enableListNameEditing() {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.classList.add('form-control');
+        input.value = listName.textContent;
+        input.style.maxWidth = '200px'; // Optional: Set a max width for the input
+
+        // Replace the list name with the input field
+        newListDiv.replaceChild(input, listName);
+
+        // Handle blur event to save changes
+        input.addEventListener('blur', function () {
+            const newTitle = input.value.trim();
+            if (newTitle !== '') {
+                listName.textContent = newTitle;
+                newListDiv.replaceChild(listName, input); // Replace input back with the updated name
+                saveLists(); // Save changes to localStorage
+            } else {
+                alert('List name cannot be empty.');
+                input.focus(); // Keep focus if the input is empty
+            }
+        });
+
+        // Handle Enter key for saving changes
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                input.blur();
+            }
+        });
+
+        // Automatically focus on the input field for editing
+        input.focus();
+    }
+
+    // Add event listener to the list name to allow editing on click
+    listName.addEventListener('click', enableListNameEditing);
 
     // Create the ul element for tasks
     const listGroup = document.createElement('ul');
@@ -100,14 +137,14 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
         deleteTaskBtn.textContent = 'Delete';
         deleteTaskBtn.style.display = 'none'; // Hide by default
 
-         // Show/hide the edit and delete buttons when settings is clicked
-         settingsBtn.addEventListener('click', function () {
+        // Show/hide the edit and delete buttons when settings is clicked
+        settingsBtn.addEventListener('click', function () {
             const isVisible = editTaskBtn.style.display === 'inline-block';
             editTaskBtn.style.display = deleteTaskBtn.style.display = isVisible ? 'none' : 'inline-block';
         });
 
-         // Add functionality to edit the task when edit button is clicked
-         editTaskBtn.addEventListener('click', function () {
+        // Add functionality to edit the task when edit button is clicked
+        editTaskBtn.addEventListener('click', function () {
             const input = document.createElement('input');
             input.type = 'text';
             input.value = label.textContent;
@@ -118,13 +155,19 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
 
             // When input loses focus, save changes
             input.addEventListener('blur', function () {
-                label.textContent = input.value;  // Update the label with new value
-                taskContent.replaceChild(label, input);
-                saveLists();  // Save changes to localStorage
+                const newTaskText = input.value.trim();
+                if (newTaskText !== '') {
+                    label.textContent = newTaskText;  // Update the label with new value
+                    taskContent.replaceChild(label, input);
+                    saveLists();  // Save changes to localStorage
+                } else {
+                    alert('Task cannot be empty.');
+                    input.focus(); // Keep focus if the input is empty
+                }
             });
 
             // Handle Enter key for saving changes
-            input.addEventListener('keydown', function(e) {
+            input.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
                     input.blur();
                 }
@@ -139,6 +182,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
             if (confirm('Are you sure you want to delete this task?')) {
                 listItem.remove();  // Remove the specific task from the list
                 saveLists();        // Update the saved lists
+                checkAllTasksCompleted(); // Re-check if the list should be archived/unarchived
             }
         });
 
@@ -150,7 +194,6 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
 
         // Add the task to the list group
         listGroup.appendChild(listItem);
-
     }
 
     // Add the provided tasks (or prompt the user for the first task)
@@ -187,7 +230,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     });
 
     // Allow adding task by pressing Enter key
-    taskInput.addEventListener('keydown', function(e) {
+    taskInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
             addTaskBtn.click();
         }
@@ -245,11 +288,14 @@ document.getElementById('createNewList').addEventListener('click', function (e) 
     createNewList();     // Call the function to create a new list
 });
 
-// Event listener for the '+' button next to the Active Lists title
-document.getElementById('createNewListButton').addEventListener('click', function (e) {
-    e.preventDefault();  // Prevent default action
-    createNewList();     // Call the function to create a new list
-});
+// Event listener for the '+' button next to the Active Lists title (if exists)
+const createNewListButton = document.getElementById('createNewListButton');
+if (createNewListButton) {
+    createNewListButton.addEventListener('click', function (e) {
+        e.preventDefault();  // Prevent default action
+        createNewList();     // Call the function to create a new list
+    });
+}
 
 // Load the saved lists from localStorage when the page loads
 document.addEventListener('DOMContentLoaded', loadLists);
