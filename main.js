@@ -1,9 +1,12 @@
-//Function to load lists from localStorage
- function loadLists() {
-     const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
-    storedLists.forEach(list => createNewList(list.title, list.tasks, list.isArchived));
- }
- 
+// Function to load lists from localStorage
+function loadLists() {
+    try {
+        const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
+        storedLists.forEach(list => createNewList(list.title, list.tasks, list.isArchived));
+    } catch (error) {
+        console.error('Error loading lists from localStorage:', error);
+    }
+}
 
 // Function to save lists to localStorage
 function saveLists() {
@@ -120,14 +123,23 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
                 saveLists();  // Save changes to localStorage
             });
 
+            // Handle Enter key for saving changes
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    input.blur();
+                }
+            });
+
             // Focus the input field for immediate editing
             input.focus();
         });
 
         // Add functionality to delete the task when delete button is clicked
         deleteTaskBtn.addEventListener('click', function () {
-            listItem.remove();  // Remove the specific task from the list
-            saveLists();        // Update the saved lists
+            if (confirm('Are you sure you want to delete this task?')) {
+                listItem.remove();  // Remove the specific task from the list
+                saveLists();        // Update the saved lists
+            }
         });
 
         // Append task content and buttons to list item
@@ -139,7 +151,6 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
         // Add the task to the list group
         listGroup.appendChild(listItem);
 
-    
     }
 
     // Add the provided tasks (or prompt the user for the first task)
@@ -166,20 +177,33 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     // Add task functionality when button is clicked
     addTaskBtn.addEventListener('click', function () {
         const taskText = taskInput.value.trim();
+        if (taskText === '') {
+            alert('Task cannot be empty.');
+            return;
+        }
         addTask({ label: taskText });
         taskInput.value = ''; // Clear input after adding the task
         saveLists();          // Save the lists to localStorage
     });
 
+    // Allow adding task by pressing Enter key
+    taskInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            addTaskBtn.click();
+        }
+    });
+
     // Create a delete button for the entire list
     const deleteBtn = document.createElement('button');
-    deleteBtn.classList.add('btn', 'btn-danger', 'mt-2', );
+    deleteBtn.classList.add('btn', 'btn-danger', 'mt-2');
     deleteBtn.textContent = 'Delete List';
 
     // Add functionality to delete the entire list when the button is clicked
     deleteBtn.addEventListener('click', function () {
-        newListDiv.remove();  // Remove the entire list from the DOM
-        saveLists();          // Update the saved lists
+        if (confirm('Are you sure you want to delete this list?')) {
+            newListDiv.remove();  // Remove the entire list from the DOM
+            saveLists();          // Update the saved lists
+        }
     });
 
     // Append elements to the task input div
@@ -215,8 +239,14 @@ function unarchiveList(listDiv) {
     saveLists();  // Update the saved state in localStorage
 }
 
-// Event listener for the 'Create new list' button
+// Event listener for the 'Create new list' button in dropdown
 document.getElementById('createNewList').addEventListener('click', function (e) {
+    e.preventDefault();  // Prevent default action
+    createNewList();     // Call the function to create a new list
+});
+
+// Event listener for the '+' button next to the Active Lists title
+document.getElementById('createNewListButton').addEventListener('click', function (e) {
     e.preventDefault();  // Prevent default action
     createNewList();     // Call the function to create a new list
 });
