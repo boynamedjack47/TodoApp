@@ -61,19 +61,32 @@ h3 {
     background-color: azure;
 }
 
+html {
+    background-color: azure;
+}
+
 .todolists {
     justify-content: center;
+   
+
 }
 
 .archived {
     justify-content: center;
+    padding: 30px;
+ 
 }
 
 h3 {
     display: flex;
     justify-content: center;
+    border: inset;
+   background: linear-gradient(45deg, skyblue, transparent);
+   border-radius: 10px;
+   
+   
 }
 
 .navbar {
-    background-color: ivory;
+    background-color: skyblue;
 }

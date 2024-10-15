@@ -9,50 +9,53 @@
     <script defer src="main.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg --bs-primary: ">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">To-Do</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Active lists</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Create
-                </a>
-                <ul class="dropdown-menu">
-                 <li><a class="dropdown-item" href="#" id="createNewList">Create new list</a></li>
-          
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Archived Lists</a>
-              </li>
-            </ul>
-            <!-- <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form> -->
-          </div>
-        </div>
-      </nav>
+  <nav class="navbar navbar-expand-lg --bs-primary: ">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">To-Do</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Active lists</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Archived lists</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Create
+            </a>
+            <ul class="dropdown-menu">
+             <li><a class="dropdown-item" href="#" id="createNewList">Create new list</a></li>
+      
+          </li>
+        </ul>
+        <!-- <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form> -->
+      </div>
+    </div>
+
+    <div class="usericon"></div>
+  </nav>
+
     
 
     <div class="maincontent">
         <div class="settings"></div>
         <div class="header"></div>
-        <div class="todolists-container">
+        <div class="todolists-container" style="padding: 30px;">
           <h3>Active Lists</h3>
           <div class="todolists"></div> <!-- Active lists will be appended here -->
       </div>
       
-      <div class="archived-container mt-5">
+      <div class="archived-container mt-5" style="padding: 30px;">
           <h3>Archived Lists</h3>
           <div class="archived"></div> <!-- Archived lists will be appended here -->
       </div>
