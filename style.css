@@ -90,3 +90,20 @@ h3 {
 .navbar {
     background-color: skyblue;
 }
+
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+.usericon {
+    display: flex;
+    margin: 0px 25px 0px 0px;
+    border-radius: 12px;
+    border: inset;
+    padding: 5px 5px 5px 5px;
+}
