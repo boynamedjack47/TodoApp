@@ -2,7 +2,7 @@
 function loadLists() {
     try {
         const storedLists = JSON.parse(localStorage.getItem('todolists')) || [];
-        storedLists.forEach(list => createNewList(list.title, list.tasks, list.isArchived));
+        storedLists.forEach(list => createNewList(list.title, list.tasks, list.isArchived, false));
     } catch (error) {
         console.error('Error loading lists from localStorage:', error);
     }
@@ -22,13 +22,18 @@ function saveLists() {
         });
         lists.push({ title, tasks, isArchived });
     });
-    localStorage.setItem('todolists', JSON.stringify(lists));
+    try {
+        localStorage.setItem('todolists', JSON.stringify(lists));
+    } catch (error) {
+        console.error('Error saving lists to localStorage:', error);
+        alert('Failed to save lists. Please try again.');
+    }
 }
 
 // Function to create a new list
-function createNewList(listTitle = '', tasks = [], isArchived = false) {
-    // If no title is provided, ask the user for the title and first task
-    if (!listTitle) {
+function createNewList(listTitle = '', tasks = [], isArchived = false, shouldPrompt = true) {
+    // If no title is provided and prompting is allowed, ask the user for the title and first task
+    if (!listTitle && shouldPrompt) {
         listTitle = prompt('Enter a name for your new list:');
         if (!listTitle) return; // Exit if title is empty
     }
@@ -197,7 +202,7 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     }
 
     // Add the provided tasks (or prompt the user for the first task)
-    if (tasks.length === 0) {
+    if (tasks.length === 0 && shouldPrompt) {
         const firstTask = prompt('Enter the first task for your new list:');
         if (firstTask) addTask({ label: firstTask });
     } else {
@@ -217,8 +222,13 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     addTaskBtn.classList.add('btn', 'btn-primary', 'mt-2');
     addTaskBtn.textContent = 'Add Task';
 
-    // Add task functionality when button is clicked
+    // Add task functionality when button is clicked (disabled for archived lists)
     addTaskBtn.addEventListener('click', function () {
+        if (isArchived) {
+            alert('You cannot add tasks to an archived list.');
+            return;
+        }
+
         const taskText = taskInput.value.trim();
         if (taskText === '') {
             alert('Task cannot be empty.');
@@ -230,11 +240,18 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
     });
 
     // Allow adding task by pressing Enter key
-    taskInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
+    taskInput.addEventListener('keydown', function(e) {
+        if (!isArchived && e.key === 'Enter') {
             addTaskBtn.click();
         }
     });
+
+    // Disable the task input and button for archived lists
+    if (isArchived) {
+        taskInput.disabled = true;
+        addTaskBtn.disabled = true;
+        taskInput.placeholder = 'Archived list - cannot add tasks';
+    }
 
     // Create a delete button for the entire list
     const deleteBtn = document.createElement('button');
@@ -273,12 +290,28 @@ function createNewList(listTitle = '', tasks = [], isArchived = false) {
 // Function to move the list to the archive div
 function archiveList(listDiv) {
     document.querySelector('.archived').appendChild(listDiv);
+    // Disable the task input and button in the archived list
+    const taskInput = listDiv.querySelector('input[type="text"]');
+    const addTaskBtn = listDiv.querySelector('button.btn-primary');
+    if (taskInput && addTaskBtn) {
+        taskInput.disabled = true;
+        addTaskBtn.disabled = true;
+        taskInput.placeholder = 'Archived list - cannot add tasks';
+    }
     saveLists();  // Update the saved state in localStorage
 }
 
 // Function to move the list back to the active section
 function unarchiveList(listDiv) {
     document.querySelector('.todolists').appendChild(listDiv);
+    // Enable the task input and button in the active list
+    const taskInput = listDiv.querySelector('input[type="text"]');
+    const addTaskBtn = listDiv.querySelector('button.btn-primary');
+    if (taskInput && addTaskBtn) {
+        taskInput.disabled = false;
+        addTaskBtn.disabled = false;
+        taskInput.placeholder = 'Add a task';
+    }
     saveLists();  // Update the saved state in localStorage
 }
 
